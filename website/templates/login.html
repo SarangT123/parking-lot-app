@@ -1,0 +1,62 @@
+{%extends 'base.html'%}
+{%block script1%}{%endblock%}
+{%block title%} Homepage {%endblock%}
+{%block contents%}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Navbar</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/login">Home</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link" href="/register">Register</a>
+            </li>
+        </ul>
+        </div>
+    </div>
+</nav>
+<br>
+{% with messages = get_flashed_messages() %}  
+{% if messages %}  
+      {% for message in messages %}  
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{message}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      {% endfor %}  
+{% endif %}  
+{% endwith %}
+<h1 class="text-center">Login</h1>
+<!--  -->
+<!--  -->
+<!--  -->
+
+<div class="container h-100">
+    <div class="row h-100 justify-content-center align-items-center">
+        <div class="col-10 col-md-8 col-lg-6">
+            <form method="post">
+                <div class="mb-3">
+                    <label for="exampleInputEmail1" class="form-label">Name</label>
+                    <input type="text" class="form-control" id="Name" name="Name" aria-describedby="emailHelp" required>
+                </div>
+                <div class="mb-3">
+                  <label for="exampleInputPassword1" class="form-label">Password</label>
+                  <input type="password" class="form-control" id="Password" name="Password" required>
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary text-center">Login</button>
+                    <div id="user" class="form-text"><a href="/register"><h6>Dont have an account? Click here to register</h6></a></div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{%endblock%}
+
+{%block script2%}{%endblock%}
