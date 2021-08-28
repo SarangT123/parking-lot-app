@@ -3,7 +3,21 @@
 {%block title%} Homepage {%endblock%}
 {%block contents%}
 <h1 class="text-center">We found these parking lots near {{pincode}}</h1>
-
+{%for i in range(lot_id|length)%}
+<div class="container h-100">
+    <div class="row h-100 justify-content-center align-items-center">
+        <div class="col-10 col-md-8 col-lg-6">
+<div class="card row" style="width: 18rem;">
+    <div class="card-body">
+      <h5 class="card-title">{{lot_name[i]}}</h5>
+      <p class="card-text">The lot id is {{lot_id[i]}}</p>
+      <a href="/lots/book/{{lot_id[i]}}" class="btn btn-primary">Book now</a>
+    </div>
+</div>
+</div>
+</div>
+</div>
+{%endfor%}
 {%endblock%}
 
 {%block script2%}{%endblock%}

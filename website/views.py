@@ -16,6 +16,7 @@ def make_session_permanent():
 
 users = "website/static/Users.csv"
 email = "website/static/Email.csv"
+lots_info = "website/static/lot.data"
 
 
 @views.route('/')
@@ -85,31 +86,63 @@ def login():
             return render_template('login.html')
 
 
-@views.route('/dashboard')
+@views.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
-    if 'token' in session and 'name' in session:
-        token = session['token']
-        name = session['name']
-        with open(users, 'r+') as csvfile:
-            reader = csv.reader(csvfile)
-            fields = []
-            fields = next(reader)
-            Tokens = []
-            for row in reader:
-                Tokens.append(row)
-            if token in Tokens:
-                session['name'] = name
-                session['token'] = token
-                flash('Woo! Logged you in Enjoy!')
-                return render_template('MM.html', name=name)
-            else:
-                session.pop('token')
-                session.pop('name')
-                flash(
-                    "That username or password doesn't match with our's ! Is that a typo?")
-                return redirect('/login')
+    if request.method == 'POST':
+        data = open(lots_info, 'r')
+        display = data.read().split('^')
+        data.close()
+        if request.form['Search'] in display:
+            return redirect(f"/lots/{str(request.form['Search'])}")
+        else:
+            flash('No lots found in that location')
+            return render_template('MM.html')
     else:
-        return redirect('/login')
+        if 'token' in session and 'name' in session:
+            token = session['token']
+            name = session['name']
+            with open(users, 'r+') as csvfile:
+                reader = csv.reader(csvfile)
+                fields = []
+                fields = next(reader)
+                Tokens = []
+                for row in reader:
+                    Tokens.append(row)
+                if token in Tokens:
+                    session['name'] = name
+                    session['token'] = token
+                    flash('Woo! Logged you in Enjoy!')
+                    return render_template('MM.html', name=name)
+                else:
+                    session.pop('token')
+                    session.pop('name')
+                    flash(
+                        "That username or password doesn't match with our's ! Is that a typo?")
+                    return redirect('/login')
+        else:
+            return redirect('/login')
+
+
+@views.route('/lots/<pin>')
+def lots(pin):
+    print(pin)
+    data = open(lots_info, 'r')
+    display = data.read().split('^')
+    data.close()
+    print(display)
+    matches = []
+    for i in range(len(display)):
+        if display[i] == pin:
+            matches.append(i)
+    display_id = []
+    display_name = []
+    print(matches)
+    for i in range(len(matches)):
+        display_id.append(display[int(matches[i])+1])
+        display_name.append(display[int(matches[i])+2])
+    print(display_id)
+    print(display_name)
+    return render_template('lots.html', lot_name=display_name, lot_id=display_id)
 
 
 @views.route('/logout')
