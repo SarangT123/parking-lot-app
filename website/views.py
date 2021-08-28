@@ -74,6 +74,22 @@ def login():
     if request.method == 'POST':
         token = [f"{request.form['Name']}*#z{request.form['Password']}"]
         name = [request.form['Name']]
+        session['token'] = token
+        session['name'] = name
+        return redirect('/dashboard')
+    else:
+        if 'token' in session and 'name' in session:
+            print('session login')
+            return redirect('/dashboard')
+        else:
+            return render_template('login.html')
+
+
+@views.route('/dashboard')
+def dashboard():
+    if 'token' in session and 'name' in session:
+        token = session['token']
+        name = session['name']
         with open(users, 'r+') as csvfile:
             reader = csv.reader(csvfile)
             fields = []
@@ -87,29 +103,13 @@ def login():
                 flash('Woo! Logged you in Enjoy!')
                 return render_template('MM.html', name=name)
             else:
+                session.pop('token')
+                session.pop('name')
                 flash(
                     "That username or password doesn't match with our's ! Is that a typo?")
-                return render_template('login.html')
+                return redirect('/login')
     else:
-        if 'token' in session and 'name' in session:
-            print('session login')
-            with open(users, 'r+') as csvfile:
-                reader = csv.reader(csvfile)
-                fields = []
-                fields = next(reader)
-                Tokens = []
-                for row in reader:
-                    Tokens.append(row)
-                if session['token'] in Tokens:
-                    name = session['name']
-                    flash('Woo! Logged you in Enjoy!')
-                    return render_template('MM.html', name=name)
-                else:
-                    flash(
-                        "That username or password doesn't match with our's ! Is that a typo?")
-                return render_template('login.html')
-        else:
-            return render_template('login.html')
+        return redirect('/login')
 
 
 @views.route('/logout')
