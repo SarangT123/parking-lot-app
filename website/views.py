@@ -21,8 +21,7 @@ lots_info = "website/static/lot.data"
 
 @views.route('/')
 def home():
-    print(session['name'])
-    if 'token' in session:
+    if 'token' in session and 'name' in session:
         return redirect('/login')
     else:
         return redirect('/register')
@@ -92,8 +91,8 @@ def dashboard():
         data = open(lots_info, 'r')
         display = data.read().split('^')
         data.close()
-        if request.form['Search'] in display:
-            return redirect(f"/lots/{str(request.form['Search'])}")
+        if request.form['search'] in display:
+            return redirect(f"/lots/{str(request.form['search'])}")
         else:
             flash('No lots found in that location')
             return render_template('MM.html')
@@ -112,6 +111,7 @@ def dashboard():
                     session['name'] = name
                     session['token'] = token
                     flash('Woo! Logged you in Enjoy!')
+                    session['logged_in'] = True
                     return render_template('MM.html', name=name)
                 else:
                     session.pop('token')
@@ -125,24 +125,35 @@ def dashboard():
 
 @views.route('/lots/<pin>')
 def lots(pin):
-    print(pin)
-    data = open(lots_info, 'r')
-    display = data.read().split('^')
-    data.close()
-    print(display)
-    matches = []
-    for i in range(len(display)):
-        if display[i] == pin:
-            matches.append(i)
-    display_id = []
-    display_name = []
-    print(matches)
-    for i in range(len(matches)):
-        display_id.append(display[int(matches[i])+1])
-        display_name.append(display[int(matches[i])+2])
-    print(display_id)
-    print(display_name)
-    return render_template('lots.html', lot_name=display_name, lot_id=display_id)
+    print(session['logged_in'])
+    if 'logged_in' in session:
+        if session['logged_in']:
+            print(pin)
+            data = open(lots_info, 'r')
+            display = data.read().split('^')
+            data.close()
+            print(display)
+            matches = []
+            for i in range(len(display)):
+                if display[i] == pin:
+                    print(display[i])
+                    matches.append(i)
+            display_id = []
+            display_name = []
+            call_number = []
+            print(matches)
+            for i in range(len(matches)):
+                display_id.append(display[int(matches[i])+1])
+                display_name.append(display[int(matches[i])+2])
+                call_number.append(display[int(matches[i])+3])
+
+            print(display_id)
+            print(display_name)
+            return render_template('lots.html', lot_name=display_name, lot_id=display_id, lot_number=call_number)
+        else:
+            return redirect('/login')
+    else:
+        return redirect('/login')
 
 
 @views.route('/logout')
